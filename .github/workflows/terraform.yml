@@ -1,0 +1,102 @@
+name: "Terraform infra workflow"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      aws-region:
+        required: true
+        type: string
+      destroy:
+        required: true
+        type: boolean
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_SESSION_TOKEN:
+        required: true
+      AWS_STATE_S3_BUCKET:
+        required: true
+      RABBITMQ_USER:
+        required: true
+      RABBITMQ_PASSWORD:
+        required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    outputs:
+      rabbitmq_ip: ${{ steps.outputs.outputs.rabbitmq_ip }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform-version: 1.8.3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: Terraform init
+        run: |
+          cd infra && terraform init \
+            -backend-config="bucket=${{ secrets.AWS_STATE_S3_BUCKET }}" \
+            -backend-config="key=${{ github.event.repository.name }}" \
+            -backend-config="region=${{ inputs.aws-region }}"
+
+      - name: Terraform validate
+        run: cd infra && terraform validate
+
+      - name: Terraform destroy
+        if: ${{ inputs.destroy == true }}
+        id: terraform-destroy
+        run: |
+          cd infra &&
+          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
+          terraform destroy \
+            -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
+            -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
+            -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
+            -auto-approve
+
+      - name: Terraform plan
+        if: ${{ !inputs.destroy }}
+        id: terraform-plan
+        run: |
+          cd infra &&
+          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
+          terraform plan \
+            -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
+            -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
+            -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
+            -out="${{ inputs.environment }}.plan"
+
+      - name: Terraform apply
+        if: ${{ !inputs.destroy }}
+        id: terraform-apply
+        run: |
+          cd infra &&
+          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
+          terraform apply "${{ inputs.environment }}.plan"
+
+      - name: Get Terraform Outputs
+        id: outputs
+        if: ${{ !inputs.destroy }}
+        run: |
+          cd infra
+          echo "rabbitmq_ip=$(terraform output -raw rabbitmq_private_ip)" >> $GITHUB_OUTPUT

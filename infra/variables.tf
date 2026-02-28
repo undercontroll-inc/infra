@@ -49,3 +49,15 @@ variable "backend_port" {
   type        = number
   default     = 8080
 }
+
+variable "rabbitmq_user" {
+  description = "RabbitMQ default username"
+  type        = string
+  sensitive   = true
+}
+
+variable "rabbitmq_password" {
+  description = "RabbitMQ default password"
+  type        = string
+  sensitive   = true
+}

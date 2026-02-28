@@ -9,6 +9,7 @@ terraform {
   # Partial backend config — supply bucket via:
   # terraform init -backend-config="bucket=<your-bucket-name>"
   backend "s3" {
+    bucket = ""
     key    = "undercontroll/terraform.tfstate"
     region = "us-east-1"
   }
@@ -65,4 +66,13 @@ module "security_groups" {
   env          = var.env
   vpc_id       = module.vpc.vpc_id
   backend_port = var.backend_port
+}
+
+module "ec2" {
+  source            = "./modules/ec2"
+  env               = var.env
+  subnet_id         = module.subnets.services_private_subnet_id
+  security_group_id = module.security_groups.services_sg_id
+  rabbitmq_user     = var.rabbitmq_user
+  rabbitmq_password = var.rabbitmq_password
 }
