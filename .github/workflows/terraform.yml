@@ -23,8 +23,6 @@ on:
         required: true
       RABBITMQ_PASSWORD:
         required: true
-      EC2_PUBLIC_KEY:
-        required: true
 
 jobs:
   terraform:
@@ -68,7 +66,6 @@ jobs:
             -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
             -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
             -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
-            -var="public_key=${{ secrets.EC2_PUBLIC_KEY }}" \
             -auto-approve
 
       - name: Terraform plan
@@ -81,7 +78,6 @@ jobs:
             -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
             -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
             -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
-            -var="public_key=${{ secrets.EC2_PUBLIC_KEY }}" \
             -out="${{ inputs.environment }}.plan"
 
       - name: Terraform apply

@@ -10,3 +10,6 @@ backend_private_subnet_cidr  = "10.1.3.0/24"
 database_private_subnet_cidr = "10.1.4.0/24"
 
 backend_port = 8080
+
+# Nome da key pair a ser usada para o ssh nas instancias
+key_pair_name = "minha-chave"

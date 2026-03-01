@@ -45,8 +45,7 @@ variable "rabbitmq_password" {
   sensitive   = true
 }
 
-variable "public_key" {
-  description = "SSH public key content to register as an EC2 key pair"
+variable "key_pair_name" {
+  description = "Name of the existing AWS EC2 key pair (created in the AWS console, .pem downloaded)"
   type        = string
-  sensitive   = true
 }

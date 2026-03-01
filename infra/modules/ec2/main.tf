@@ -1,15 +1,10 @@
-resource "aws_key_pair" "deployer" {
-  key_name   = "${var.env}-deployer-key"
-  public_key = var.public_key
-}
-
 resource "aws_instance" "frontend_instance" {
   ami           = data.aws_ami.ubuntu_ami.id
   instance_type = var.services_instance_type
 
   subnet_id              = var.frontend_subnet_id
   vpc_security_group_ids = [var.frontend_security_group_id]
-  key_name               = aws_key_pair.deployer.key_name
+  key_name               = var.key_pair_name
 
   # Replace the instance whenever user_data changes (e.g. credential rotation)
   user_data_replace_on_change = true
@@ -27,7 +22,7 @@ resource "aws_instance" "services_instance" {
 
   subnet_id              = var.services_subnet_id
   vpc_security_group_ids = [var.services_security_group_id]
-  key_name               = aws_key_pair.deployer.key_name
+  key_name               = var.key_pair_name
 
   # Replace the instance whenever user_data changes (e.g. credential rotation)
   user_data_replace_on_change = true

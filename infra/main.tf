@@ -69,5 +69,5 @@ module "ec2" {
   services_security_group_id = module.security_groups.services_sg_id
   rabbitmq_user              = var.rabbitmq_user
   rabbitmq_password          = var.rabbitmq_password
-  public_key                 = var.public_key
+  key_pair_name              = var.key_pair_name
 }
