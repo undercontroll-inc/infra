@@ -61,3 +61,9 @@ variable "rabbitmq_password" {
   type        = string
   sensitive   = true
 }
+
+variable "public_key" {
+  description = "SSH public key content to register as an EC2 key pair"
+  type        = string
+  sensitive   = true
+}

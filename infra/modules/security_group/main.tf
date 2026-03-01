@@ -20,6 +20,14 @@ resource "aws_security_group" "frontend" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "SSH from internet"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -80,6 +88,14 @@ resource "aws_security_group" "services" {
     to_port         = 6379
     protocol        = "tcp"
     security_groups = [aws_security_group.backend.id]
+  }
+
+  ingress {
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.frontend.id]
   }
 
   egress {

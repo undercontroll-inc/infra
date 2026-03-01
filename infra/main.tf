@@ -5,14 +5,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-
-  # Partial backend config — supply bucket via:
-  # terraform init -backend-config="bucket=<your-bucket-name>"
-  backend "s3" {
-    bucket = ""
-    key    = "undercontroll/terraform.tfstate"
-    region = "us-east-1"
-  }
 }
 
 provider "aws" {
@@ -69,10 +61,13 @@ module "security_groups" {
 }
 
 module "ec2" {
-  source            = "./modules/ec2"
-  env               = var.env
-  subnet_id         = module.subnets.services_private_subnet_id
-  security_group_id = module.security_groups.services_sg_id
-  rabbitmq_user     = var.rabbitmq_user
-  rabbitmq_password = var.rabbitmq_password
+  source                     = "./modules/ec2"
+  env                        = var.env
+  frontend_subnet_id         = module.subnets.frontend_public_subnet_id
+  services_subnet_id         = module.subnets.services_private_subnet_id
+  frontend_security_group_id = module.security_groups.frontend_sg_id
+  services_security_group_id = module.security_groups.services_sg_id
+  rabbitmq_user              = var.rabbitmq_user
+  rabbitmq_password          = var.rabbitmq_password
+  public_key                 = var.public_key
 }
