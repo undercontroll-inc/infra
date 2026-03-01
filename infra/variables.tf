@@ -66,3 +66,9 @@ variable "key_pair_name" {
   description = "Name of the existing AWS EC2 key pair (created in the AWS console, .pem downloaded)"
   type        = string
 }
+
+variable "deploy_public_key" {
+  description = "SSH public key for the limited 'deploy' OS user on the frontend EC2 (used by CI/CD SCP). Generate a dedicated keypair: ssh-keygen -t ed25519 -C 'deploy@undercontroll-ci'"
+  type        = string
+  sensitive   = true
+}

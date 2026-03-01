@@ -49,3 +49,9 @@ variable "key_pair_name" {
   description = "Name of the existing AWS EC2 key pair (created in the AWS console, .pem downloaded)"
   type        = string
 }
+
+variable "deploy_public_key" {
+  description = "SSH public key for the limited 'deploy' OS user on the frontend EC2. This user can only write to /usr/share/nginx/html and reload nginx — not sudo to root."
+  type        = string
+  sensitive   = true
+}

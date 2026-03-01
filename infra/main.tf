@@ -5,6 +5,15 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  # Definindo o backend como um s3 para sincronizarmos as alterações na infraestrutura globalmente
+  backend "s3" {
+    bucket         = "undercontroll-tfstate-dev"
+    key            = "dev/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "undercontroll-tfstate-lock-dev"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
@@ -70,4 +79,5 @@ module "ec2" {
   rabbitmq_user              = var.rabbitmq_user
   rabbitmq_password          = var.rabbitmq_password
   key_pair_name              = var.key_pair_name
+  deploy_public_key          = var.deploy_public_key
 }
