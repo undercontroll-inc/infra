@@ -23,12 +23,17 @@ on:
         required: true
       RABBITMQ_PASSWORD:
         required: true
+      DEPLOY_PUBLIC_KEY:
+        required: true
+      GH_PAT:
+        required: true
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
     outputs:
       rabbitmq_ip: ${{ steps.outputs.outputs.rabbitmq_ip }}
+      frontend_public_ip: ${{ steps.outputs.outputs.frontend_public_ip }}
     defaults:
       run:
         shell: bash
@@ -66,6 +71,7 @@ jobs:
             -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
             -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
             -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
+            -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
             -auto-approve
 
       - name: Terraform plan
@@ -78,6 +84,7 @@ jobs:
             -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
             -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
             -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
+            -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
             -out="${{ inputs.environment }}.plan"
 
       - name: Terraform apply
@@ -93,4 +100,29 @@ jobs:
         if: ${{ !inputs.destroy }}
         run: |
           cd infra
-          echo "rabbitmq_ip=$(terraform output -raw rabbitmq_private_ip)" >> $GITHUB_OUTPUT
+          RABBITMQ_IP=$(terraform output -raw rabbitmq_private_ip)
+          FRONTEND_PUBLIC_IP=$(terraform output -raw frontend_public_ip)
+          echo "rabbitmq_ip=${RABBITMQ_IP}" >> $GITHUB_OUTPUT
+          echo "frontend_public_ip=${FRONTEND_PUBLIC_IP}" >> $GITHUB_OUTPUT
+
+      - name: Sync secrets to frontend repo
+        if: ${{ !inputs.destroy }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          FRONTEND_PUBLIC_IP: ${{ steps.outputs.outputs.frontend_public_ip }}
+        run: |
+          # EC2_HOST: updated every apply so the frontend CD always deploys to the correct IP
+          gh secret set EC2_HOST \
+            --repo undercontroll-inc/frontend \
+            --body "${FRONTEND_PUBLIC_IP}"
+
+          # VITE_API_URL: relative path — browser calls same origin, nginx proxies to backend
+          gh secret set VITE_API_URL \
+            --repo undercontroll-inc/frontend \
+            --body "/v1/api"
+
+          # Uncomment when the backend EC2 is added to Terraform:
+          # BACKEND_PRIVATE_IP=$(terraform output -raw backend_private_ip -chdir=infra)
+          # gh secret set BACKEND_PRIVATE_IP \
+          #   --repo undercontroll-inc/frontend \
+          #   --body "${BACKEND_PRIVATE_IP}"
