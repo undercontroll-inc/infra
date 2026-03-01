@@ -19,8 +19,6 @@ on:
         required: true
       AWS_SESSION_TOKEN:
         required: true
-      AWS_STATE_S3_BUCKET:
-        required: true
       RABBITMQ_USER:
         required: true
       RABBITMQ_PASSWORD:
@@ -55,11 +53,7 @@ jobs:
           aws-region: ${{ inputs.aws-region }}
 
       - name: Terraform init
-        run: |
-          cd infra && terraform init \
-            -backend-config="bucket=${{ secrets.AWS_STATE_S3_BUCKET }}" \
-            -backend-config="key=${{ github.event.repository.name }}" \
-            -backend-config="region=${{ inputs.aws-region }}"
+        run: cd infra && terraform init
 
       - name: Terraform validate
         run: cd infra && terraform validate
