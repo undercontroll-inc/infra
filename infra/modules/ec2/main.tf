@@ -31,6 +31,12 @@ resource "aws_instance" "services_instance" {
     #!/bin/bash
     set -e
 
+    # Wait for cloud-init's own apt operations to finish before touching the lock
+    systemd-run --property="After=cloud-init.service" --wait true 2>/dev/null || true
+    while fuser /var/lib/dpkg/lock-frontend /var/lib/apt/lists/lock >/dev/null 2>&1; do
+      sleep 2
+    done
+
     apt-get update -y
     apt-get install -y docker.io
 
