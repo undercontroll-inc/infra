@@ -23,7 +23,7 @@ jobs:
     needs: prepare
     uses: ./.github/workflows/terraform.yml
     with:
-      environment: prod
+      environment: dev
       aws-region: "us-east-1"
       destroy: ${{ fromJSON(needs.prepare.outputs.destroy) }}
     secrets:
