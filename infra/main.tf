@@ -86,4 +86,6 @@ module "ec2" {
   db_password                = var.db_password
   key_pair_name              = var.key_pair_name
   deploy_public_key          = var.deploy_public_key
+
+  depends_on = [module.route_tables]
 }

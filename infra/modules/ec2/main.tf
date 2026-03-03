@@ -12,7 +12,6 @@ resource "aws_instance" "frontend_instance" {
 #!/bin/bash
 set -e
 
-systemd-run --property="After=cloud-init.service" --wait true 2>/dev/null || true
 while fuser /var/lib/dpkg/lock-frontend /var/lib/apt/lists/lock >/dev/null 2>&1; do
   sleep 2
 done
@@ -62,7 +61,6 @@ resource "aws_instance" "services_instance" {
 #!/bin/bash
 set -e
 
-systemd-run --property="After=cloud-init.service" --wait true 2>/dev/null || true
 while fuser /var/lib/dpkg/lock-frontend /var/lib/apt/lists/lock >/dev/null 2>&1; do
   sleep 2
 done
