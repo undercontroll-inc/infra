@@ -17,7 +17,7 @@ jobs:
       - name: Set destroy variable
         id: set
         # Mudar para false caso queira subir a infra
-        run: echo "destroy=true" >> $GITHUB_OUTPUT
+        run: echo "destroy=false" >> $GITHUB_OUTPUT
 
   terraform:
     needs: prepare
