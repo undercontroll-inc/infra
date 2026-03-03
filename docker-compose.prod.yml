@@ -1,6 +1,6 @@
 services:
   main-service:
-    image: ghcr.io/undercontroll-inc/main-service:latest
+    image: ghcr.io/undercontroll-inc/core-api:latest
     container_name: main-service
     restart: unless-stopped
     ports:

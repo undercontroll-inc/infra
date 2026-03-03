@@ -125,7 +125,26 @@ jobs:
           echo "backend_private_ip=$(terraform output -raw backend_private_ip)" >> $GITHUB_OUTPUT
           echo "database_private_ip=$(terraform output -raw database_private_ip)" >> $GITHUB_OUTPUT
 
-      - name: Sync secrets to repositories
+      - name: Sync secrets to frontend repo
+        if: ${{ !inputs.destroy }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          FRONTEND_PUBLIC_IP: ${{ steps.outputs.outputs.frontend_public_ip }}
+          BACKEND_PRIVATE_IP: ${{ steps.outputs.outputs.backend_private_ip }}
+        run: |
+          gh secret set EC2_HOST \
+            --repo undercontroll-inc/frontend \
+            --body "${FRONTEND_PUBLIC_IP}"
+
+          gh secret set VITE_API_URL \
+            --repo undercontroll-inc/frontend \
+            --body "/v1/api"
+
+          gh secret set BACKEND_PRIVATE_IP \
+            --repo undercontroll-inc/frontend \
+            --body "${BACKEND_PRIVATE_IP}"
+
+      - name: Sync secrets to organization
         if: ${{ !inputs.destroy }}
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -143,68 +162,54 @@ jobs:
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
-          gh secret set EC2_HOST \
-            --repo undercontroll-inc/frontend \
-            --body "${FRONTEND_PUBLIC_IP}"
+          gh secret set RABBITMQ_HOST \
+            --org undercontroll-inc --visibility all \
+            --body "${RABBITMQ_IP}"
 
-          gh secret set VITE_API_URL \
-            --repo undercontroll-inc/frontend \
-            --body "/v1/api"
+          gh secret set RABBITMQ_USERNAME \
+            --org undercontroll-inc --visibility all \
+            --body "${RABBITMQ_USERNAME}"
 
-          gh secret set BACKEND_PRIVATE_IP \
-            --repo undercontroll-inc/frontend \
+          gh secret set RABBITMQ_PASSWORD \
+            --org undercontroll-inc --visibility all \
+            --body "${RABBITMQ_PASSWORD}"
+
+          gh secret set DB_HOST \
+            --org undercontroll-inc --visibility all \
+            --body "${DATABASE_PRIVATE_IP}"
+
+          gh secret set DB_USERNAME \
+            --org undercontroll-inc --visibility all \
+            --body "${DB_USERNAME}"
+
+          gh secret set DB_PASSWORD \
+            --org undercontroll-inc --visibility all \
+            --body "${DB_PASSWORD}"
+
+          gh secret set JWT_SECRET \
+            --org undercontroll-inc --visibility all \
+            --body "${JWT_SECRET}"
+
+          gh secret set BACKEND_EC2_HOST \
+            --org undercontroll-inc --visibility all \
             --body "${BACKEND_PRIVATE_IP}"
 
-          for repo in main-service notification-api; do
-            gh secret set RABBITMQ_HOST \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${RABBITMQ_IP}"
+          gh secret set BASTION_HOST \
+            --org undercontroll-inc --visibility all \
+            --body "${FRONTEND_PUBLIC_IP}"
 
-            gh secret set RABBITMQ_USERNAME \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${RABBITMQ_USERNAME}"
+          gh secret set MAIL_HOST \
+            --org undercontroll-inc --visibility all \
+            --body "${MAIL_HOST}"
 
-            gh secret set RABBITMQ_PASSWORD \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${RABBITMQ_PASSWORD}"
+          gh secret set MAIL_PORT \
+            --org undercontroll-inc --visibility all \
+            --body "${MAIL_PORT}"
 
-            gh secret set DB_HOST \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${DATABASE_PRIVATE_IP}"
+          gh secret set MAIL_USERNAME \
+            --org undercontroll-inc --visibility all \
+            --body "${MAIL_USERNAME}"
 
-            gh secret set DB_USERNAME \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${DB_USERNAME}"
-
-            gh secret set DB_PASSWORD \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${DB_PASSWORD}"
-
-            gh secret set JWT_SECRET \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${JWT_SECRET}"
-
-            gh secret set BACKEND_EC2_HOST \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${BACKEND_PRIVATE_IP}"
-
-            gh secret set BASTION_HOST \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${FRONTEND_PUBLIC_IP}"
-
-            gh secret set MAIL_HOST \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${MAIL_HOST}"
-
-            gh secret set MAIL_PORT \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${MAIL_PORT}"
-
-            gh secret set MAIL_USERNAME \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${MAIL_USERNAME}"
-
-            gh secret set MAIL_PASSWORD \
-              --repo "undercontroll-inc/${repo}" \
-              --body "${MAIL_PASSWORD}"
-          done
+          gh secret set MAIL_PASSWORD \
+            --org undercontroll-inc --visibility all \
+            --body "${MAIL_PASSWORD}"
