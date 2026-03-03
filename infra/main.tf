@@ -74,10 +74,16 @@ module "ec2" {
   env                        = var.env
   frontend_subnet_id         = module.subnets.frontend_public_subnet_id
   services_subnet_id         = module.subnets.services_private_subnet_id
+  backend_subnet_id          = module.subnets.backend_private_subnet_id
+  database_subnet_id         = module.subnets.database_private_subnet_id
   frontend_security_group_id = module.security_groups.frontend_sg_id
   services_security_group_id = module.security_groups.services_sg_id
+  backend_security_group_id  = module.security_groups.backend_sg_id
+  database_security_group_id = module.security_groups.database_sg_id
   rabbitmq_user              = var.rabbitmq_user
   rabbitmq_password          = var.rabbitmq_password
+  db_username                = var.db_username
+  db_password                = var.db_password
   key_pair_name              = var.key_pair_name
   deploy_public_key          = var.deploy_public_key
 }

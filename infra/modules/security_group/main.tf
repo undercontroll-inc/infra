@@ -41,7 +41,6 @@ resource "aws_security_group" "frontend" {
   }
 }
 
-# Backend SG — so aceita trafego vindo do frontend
 resource "aws_security_group" "backend" {
   name        = "${var.env}-backend-sg"
   description = "Backend services: allow inbound only from frontend SG"
@@ -51,6 +50,14 @@ resource "aws_security_group" "backend" {
     description     = "App port from frontend"
     from_port       = var.backend_port
     to_port         = var.backend_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.frontend.id]
+  }
+
+  ingress {
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
     protocol        = "tcp"
     security_groups = [aws_security_group.frontend.id]
   }
@@ -111,7 +118,6 @@ resource "aws_security_group" "services" {
   }
 }
 
-# Database SG (Postgres) — so aceita trafego vindo do backend
 resource "aws_security_group" "database" {
   name        = "${var.env}-database-sg"
   description = "Postgres database: allow inbound only from backend SG"
@@ -123,6 +129,14 @@ resource "aws_security_group" "database" {
     to_port         = 5432
     protocol        = "tcp"
     security_groups = [aws_security_group.backend.id]
+  }
+
+  ingress {
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.frontend.id]
   }
 
   egress {

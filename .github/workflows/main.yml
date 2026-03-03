@@ -16,8 +16,7 @@ jobs:
     steps:
       - name: Set destroy variable
         id: set
-        # Mudar para false caso queira subir a infra
-        run: echo "destroy=false" >> $GITHUB_OUTPUT
+        run: echo "destroy=true" >> $GITHUB_OUTPUT
 
   terraform:
     needs: prepare
@@ -33,4 +32,11 @@ jobs:
       RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
       RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
       DEPLOY_PUBLIC_KEY: ${{ secrets.DEPLOY_PUBLIC_KEY }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      MAIL_HOST: ${{ secrets.MAIL_HOST }}
+      MAIL_PORT: ${{ secrets.MAIL_PORT }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       GH_PAT: ${{ secrets.GH_PAT }}

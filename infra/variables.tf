@@ -9,11 +9,6 @@ variable "region" {
   default     = "us-east-1"
 }
 
-variable "bucket_name" {
-  description = "S3 bucket name for Terraform state backend"
-  type        = string
-}
-
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
   type        = string
@@ -71,4 +66,14 @@ variable "deploy_public_key" {
   description = "SSH public key for the limited 'deploy' OS user on the frontend EC2 (used by CI/CD SCP). Generate a dedicated keypair: ssh-keygen -t ed25519 -C 'deploy@undercontroll-ci'"
   type        = string
   sensitive   = true
+}
+
+variable "db_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "db_password" {
+  type      = string
+  sensitive = true
 }
