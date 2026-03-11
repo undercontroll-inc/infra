@@ -12,7 +12,7 @@ sudo usermod -aG docker deploy
 
 mkdir -p /home/deploy/.ssh
 chmod 700 /home/deploy/.ssh
-echo "${var.deploy_public_key}" > /home/deploy/.ssh/authorized_keys
+echo "${deploy_public_key}" > /home/deploy/.ssh/authorized_keys
 chmod 600 /home/deploy/.ssh/authorized_keys
 sudo chown -R deploy:deploy /home/deploy/.ssh
 

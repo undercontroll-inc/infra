@@ -15,6 +15,6 @@ sudo docker run -d \
   -p 5432:5432 \
   -v /data/postgres:/var/lib/postgresql/data \
   -e "POSTGRES_DB=undercontroll" \
-  -e "POSTGRES_USER=${var.db_username}" \
-  -e "POSTGRES_PASSWORD=${var.db_password}" \
+  -e "POSTGRES_USER=${db_username}" \
+  -e "POSTGRES_PASSWORD=${db_password}" \
   postgres:16-alpine

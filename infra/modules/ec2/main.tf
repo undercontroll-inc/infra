@@ -8,7 +8,9 @@ resource "aws_instance" "frontend_instance" {
 
   user_data_replace_on_change = true
 
-  user_data = file("${path.module}/frontend-userdata.sh")
+  user_data = templatefile("${path.module}/frontend-userdata.sh.tpl", {
+    deploy_public_key = var.deploy_public_key
+  })
 
   tags = {
     Name = "${var.env}-frontend-instance"
@@ -26,7 +28,10 @@ resource "aws_instance" "services_instance" {
   user_data_replace_on_change = true
 
 
-  user_data = file("${path.module}/rabbitmq-userdata.sh")
+  user_data = templatefile("${path.module}/rabbitmq-userdata.sh.tpl", {
+    rabbitmq_password = var.rabbitmq_password
+    rabbitmq_user     = var.rabbitmq_user
+  })
 
   tags = {
     Name = "${var.env}-services-instance"
@@ -44,7 +49,9 @@ resource "aws_instance" "backend_instance" {
 
   user_data_replace_on_change = true
 
-  user_data = file("${path.module}/backend-userdata.sh")
+  user_data = templatefile("${path.module}/backend-userdata.sh.tpl", {
+    deploy_public_key = var.deploy_public_key
+  })
 
   tags = {
     Name = "${var.env}-backend-instance"
@@ -63,7 +70,10 @@ resource "aws_instance" "database_instance" {
   user_data_replace_on_change = true
 
 
-  user_data = file("${path.module}/database-userdata.sh")
+  user_data = templatefile("${path.module}/database-userdata.sh.tpl", {
+    db_username = var.db_username
+    db_password = var.db_password
+  })
 
   tags = {
     Name = "${var.env}-database-instance"

@@ -152,15 +152,6 @@ jobs:
           BACKEND_PRIVATE_IP: ${{ steps.outputs.outputs.backend_private_ip }}
           RABBITMQ_IP: ${{ steps.outputs.outputs.rabbitmq_ip }}
           DATABASE_PRIVATE_IP: ${{ steps.outputs.outputs.database_private_ip }}
-          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USER }}
-          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          MAIL_HOST: ${{ secrets.MAIL_HOST }}
-          MAIL_PORT: ${{ secrets.MAIL_PORT }}
-          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           # FRONTEND_BUCKET_NAME: ${{ steps.outputs.outputs.frontend_bucket_name }}
           # CLOUDFRONT_DOMAIN_NAME: ${{ steps.outputs.outputs.cloudfront_domain_name }}
           # CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.outputs.outputs.cloudfront_distribution_id }}
@@ -169,29 +160,9 @@ jobs:
             --org undercontroll-inc --visibility all \
             --body "${RABBITMQ_IP}"
 
-          gh secret set RABBITMQ_USERNAME \
-            --org undercontroll-inc --visibility all \
-            --body "${RABBITMQ_USERNAME}"
-
-          gh secret set RABBITMQ_PASSWORD \
-            --org undercontroll-inc --visibility all \
-            --body "${RABBITMQ_PASSWORD}"
-
           gh secret set DB_HOST \
             --org undercontroll-inc --visibility all \
             --body "${DATABASE_PRIVATE_IP}"
-
-          gh secret set DB_USERNAME \
-            --org undercontroll-inc --visibility all \
-            --body "${DB_USERNAME}"
-
-          gh secret set DB_PASSWORD \
-            --org undercontroll-inc --visibility all \
-            --body "${DB_PASSWORD}"
-
-          gh secret set JWT_SECRET \
-            --org undercontroll-inc --visibility all \
-            --body "${JWT_SECRET}"
 
           gh secret set BACKEND_EC2_HOST \
             --org undercontroll-inc --visibility all \
@@ -200,22 +171,6 @@ jobs:
           gh secret set BASTION_HOST \
             --org undercontroll-inc --visibility all \
             --body "${FRONTEND_PUBLIC_IP}"
-
-          gh secret set MAIL_HOST \
-            --org undercontroll-inc --visibility all \
-            --body "${MAIL_HOST}"
-
-          gh secret set MAIL_PORT \
-            --org undercontroll-inc --visibility all \
-            --body "${MAIL_PORT}"
-
-          gh secret set MAIL_USERNAME \
-            --org undercontroll-inc --visibility all \
-            --body "${MAIL_USERNAME}"
-
-          gh secret set MAIL_PASSWORD \
-            --org undercontroll-inc --visibility all \
-            --body "${MAIL_PASSWORD}"
 
           # gh secret set FRONTEND_BUCKET_NAME \
           #   --org undercontroll-inc --visibility all \

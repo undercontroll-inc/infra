@@ -13,6 +13,6 @@ sudo docker run -d \
   --restart unless-stopped \
   -p 5672:5672 \
   -p 15672:15672 \
-  -e "RABBITMQ_DEFAULT_USER=${var.rabbitmq_user}" \
-  -e "RABBITMQ_DEFAULT_PASS=${var.rabbitmq_password}" \
+  -e "RABBITMQ_DEFAULT_USER=${rabbitmq_user}" \
+  -e "RABBITMQ_DEFAULT_PASS=${rabbitmq_password}" \
   rabbitmq:management-alpine
