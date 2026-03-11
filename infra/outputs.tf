@@ -13,3 +13,15 @@ output "backend_private_ip" {
 output "database_private_ip" {
   value = module.ec2.database_private_ip
 }
+
+# output "cloudfront_domain_name" {
+#   value = module.cloudfront.cloudfront_domain_url
+# }
+
+# output "cloudfront_distribution_id" {
+#   value = module.cloudfront.cloudfront_distribution_id
+# }
+
+# output "frontend_bucket_name" {
+#   value = module.s3.frontend_bucket_name
+# }

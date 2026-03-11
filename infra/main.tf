@@ -17,7 +17,8 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region  = var.region
+  profile = "faculdade"
 }
 
 module "vpc" {
@@ -89,3 +90,14 @@ module "ec2" {
 
   depends_on = [module.route_tables]
 }
+
+# module "s3" {
+#   source = "./modules/s3"
+#   env    = var.env
+# }
+
+# module "cloudfront" {
+#   source               = "./modules/cloudfront"
+#   env                  = var.env
+#   frontend_bucket_name = module.s3.frontend_bucket_name
+# }
