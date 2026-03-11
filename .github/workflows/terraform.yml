@@ -161,6 +161,9 @@ jobs:
           MAIL_PORT: ${{ secrets.MAIL_PORT }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          # FRONTEND_BUCKET_NAME: ${{ steps.outputs.outputs.frontend_bucket_name }}
+          # CLOUDFRONT_DOMAIN_NAME: ${{ steps.outputs.outputs.cloudfront_domain_name }}
+          # CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.outputs.outputs.cloudfront_distribution_id }}
         run: |
           gh secret set RABBITMQ_HOST \
             --org undercontroll-inc --visibility all \
@@ -213,3 +216,15 @@ jobs:
           gh secret set MAIL_PASSWORD \
             --org undercontroll-inc --visibility all \
             --body "${MAIL_PASSWORD}"
+
+          # gh secret set FRONTEND_BUCKET_NAME \
+          #   --org undercontroll-inc --visibility all \
+          #   --body "${FRONTEND_BUCKET_NAME}"
+
+          # gh secret set CLOUDFRONT_DOMAIN_NAME \
+          #   --org undercontroll-inc --visibility all \
+          #   --body "${CLOUDFRONT_DOMAIN_NAME}"
+
+          # gh secret set CLOUDFRONT_DISTRIBUTION_ID \
+          #   --org undercontroll-inc --visibility all \
+          #   --body "${CLOUDFRONT_DISTRIBUTION_ID}"
