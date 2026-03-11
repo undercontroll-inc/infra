@@ -17,8 +17,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
-  profile = "faculdade"
+  region = var.region
 }
 
 module "vpc" {
