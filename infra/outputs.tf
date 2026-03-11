@@ -14,6 +14,14 @@ output "database_private_ip" {
   value = module.ec2.database_private_ip
 }
 
+output "backend_instance_id" {
+  value = module.ec2.backend_instance_id
+}
+
+output "frontend_instance_id" {
+  value = module.ec2.frontend_instance_id
+}
+
 # output "cloudfront_domain_name" {
 #   value = module.cloudfront.cloudfront_domain_url
 # }

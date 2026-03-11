@@ -33,3 +33,11 @@ output "database_instance_id" {
 output "database_private_ip" {
   value = aws_instance.database_instance.private_ip
 }
+
+output "backend_instance_id" {
+  value = aws_instance.backend_instance.id
+}
+
+output "frontend_instance_id" {
+  value = aws_instance.frontend_instance.id
+}

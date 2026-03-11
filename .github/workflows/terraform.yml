@@ -124,6 +124,8 @@ jobs:
           echo "frontend_public_ip=$(terraform output -raw frontend_public_ip)" >> $GITHUB_OUTPUT
           echo "backend_private_ip=$(terraform output -raw backend_private_ip)" >> $GITHUB_OUTPUT
           echo "database_private_ip=$(terraform output -raw database_private_ip)" >> $GITHUB_OUTPUT
+          echo "backend_instance_id=$(terraform output -raw backend_instance_id)" >> $GITHUB_OUTPUT
+          echo "frontend_instance_id=$(terraform output -raw frontend_instance_id)" >> $GITHUB_OUTPUT
 
       - name: Sync secrets to frontend repo
         if: ${{ !inputs.destroy }}
@@ -152,6 +154,9 @@ jobs:
           BACKEND_PRIVATE_IP: ${{ steps.outputs.outputs.backend_private_ip }}
           RABBITMQ_IP: ${{ steps.outputs.outputs.rabbitmq_ip }}
           DATABASE_PRIVATE_IP: ${{ steps.outputs.outputs.database_private_ip }}
+          BACKEND_INSTANCE_ID: ${{ steps.outputs.outputs.backend_instance_id }}
+          FRONTEND_INSTANCE_ID: ${{ steps.outputs.outputs.frontend_instance_id }}
+
           # FRONTEND_BUCKET_NAME: ${{ steps.outputs.outputs.frontend_bucket_name }}
           # CLOUDFRONT_DOMAIN_NAME: ${{ steps.outputs.outputs.cloudfront_domain_name }}
           # CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.outputs.outputs.cloudfront_distribution_id }}
@@ -183,3 +188,11 @@ jobs:
           # gh secret set CLOUDFRONT_DISTRIBUTION_ID \
           #   --org undercontroll-inc --visibility all \
           #   --body "${CLOUDFRONT_DISTRIBUTION_ID}"
+
+          gh secret set BACKEND_INSTANCE_ID \
+             --org undercontroll-inc --visibility all \
+             --body "${BACKEND_INSTANCE_ID}"
+
+          gh secret set FRONTEND_INSTANCE_ID \
+            --org undercontroll-inc --visibility all \
+            --body "${FRONTEND_INSTANCE_ID}"

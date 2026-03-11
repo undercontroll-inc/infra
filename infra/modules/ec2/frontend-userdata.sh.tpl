@@ -1,26 +1,34 @@
 #!/bin/bash
 set -e
 
-sudo apt-get update -y
-sudo apt-get install -y nginx
+apt-get update -y
+apt-get install -y nginx
 
-sudo useradd --system --shell /bin/bash --home /home/deploy --create-home deploy
+useradd --system --shell /bin/bash --home /home/deploy --create-home deploy
 
 mkdir -p /home/deploy/.ssh
 chmod 700 /home/deploy/.ssh
 echo "${deploy_public_key}" > /home/deploy/.ssh/authorized_keys
 chmod 600 /home/deploy/.ssh/authorized_keys
-sudo chown -R deploy:deploy /home/deploy/.ssh
+chown -R deploy:deploy /home/deploy/.ssh
 
-sudo chown -R deploy:deploy /usr/share/nginx/html
+chown -R deploy:deploy /usr/share/nginx/html
 
-echo "deploy ALL=(ALL) NOPASSWD: /usr/sbin/nginx -t, /usr/sbin/nginx -s reload, /usr/bin/envsubst" \
+# Remove the default nginx site that ships with Ubuntu so it does not conflict
+# with the custom server block deployed by the CD pipeline.
+rm -f /etc/nginx/sites-enabled/default
+
+echo "deploy ALL=(ALL) NOPASSWD: \
+  /usr/sbin/nginx -t, \
+  /usr/sbin/nginx -s reload, \
+  /usr/bin/tee /etc/nginx/conf.d/default.conf, \
+  /bin/rm -f /etc/nginx/sites-enabled/default" \
   > /etc/sudoers.d/deploy-nginx
 chmod 440 /etc/sudoers.d/deploy-nginx
 
-sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-sudo systemctl reload sshd
+sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+systemctl reload sshd
 
-sudo systemctl enable nginx
-sudo systemctl start nginx
+systemctl enable nginx
+systemctl start nginx
