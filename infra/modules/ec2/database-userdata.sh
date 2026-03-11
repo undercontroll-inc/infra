@@ -1,15 +1,15 @@
 #!/bin/bash
 set -e
 
-apt-get update -y
-apt-get install -y docker.io
+sudo apt-get update -y
+sudo apt-get install -y docker.io
 
-systemctl enable docker
-systemctl start docker
+sudo systemctl enable docker
+sudo systemctl start docker
 
 mkdir -p /data/postgres
 
-docker run -d \
+sudo docker run -d \
   --name postgres \
   --restart unless-stopped \
   -p 5432:5432 \

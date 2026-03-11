@@ -1,15 +1,14 @@
-
 #!/bin/bash
 
 set -e
 
-apt-get update -y
-apt-get install -y docker.io
+sudo apt-get update -y
+sudo apt-get install -y docker.io
 
-systemctl enable docker
-systemctl start docker
+sudo systemctl enable docker
+sudo systemctl start docker
 
-docker run -d \
+sudo docker run -d \
   --name rabbitmq \
   --restart unless-stopped \
   -p 5672:5672 \
