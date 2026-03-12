@@ -90,6 +90,11 @@ jobs:
             -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
             -var="db_username=${{ secrets.DB_USERNAME }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
+            -var="mail_host=${{ secrets.MAIL_HOST }}" \
+            -var="mail_port=${{ secrets.MAIL_PORT }}" \
+            -var="mail_username=${{ secrets.MAIL_USERNAME }}" \
+            -var="mail_password=${{ secrets.MAIL_PASSWORD }}" \
             -auto-approve
 
       - name: Terraform plan
@@ -105,6 +110,11 @@ jobs:
             -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
             -var="db_username=${{ secrets.DB_USERNAME }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
+            -var="mail_host=${{ secrets.MAIL_HOST }}" \
+            -var="mail_port=${{ secrets.MAIL_PORT }}" \
+            -var="mail_username=${{ secrets.MAIL_USERNAME }}" \
+            -var="mail_password=${{ secrets.MAIL_PASSWORD }}" \
             -out="${{ inputs.environment }}.plan"
 
       - name: Terraform apply

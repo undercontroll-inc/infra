@@ -90,6 +90,84 @@ module "ec2" {
   depends_on = [module.route_tables]
 }
 
+# SSM Parameters for backend secrets
+resource "aws_ssm_parameter" "db_host" {
+  name        = "/undercontroll/${var.env}/backend/DB_HOST"
+  description = "Database host for backend"
+  type        = "String"
+  value       = module.ec2.database_private_ip
+}
+
+resource "aws_ssm_parameter" "db_username" {
+  name        = "/undercontroll/${var.env}/backend/DB_USERNAME"
+  description = "Database username for backend"
+  type        = "SecureString"
+  value       = var.db_username
+}
+
+resource "aws_ssm_parameter" "db_password" {
+  name        = "/undercontroll/${var.env}/backend/DB_PASSWORD"
+  description = "Database password for backend"
+  type        = "SecureString"
+  value       = var.db_password
+}
+
+resource "aws_ssm_parameter" "rabbitmq_host" {
+  name        = "/undercontroll/${var.env}/backend/RABBITMQ_HOST"
+  description = "RabbitMQ host for backend"
+  type        = "String"
+  value       = module.ec2.services_private_ip
+}
+
+resource "aws_ssm_parameter" "rabbitmq_user" {
+  name        = "/undercontroll/${var.env}/backend/RABBITMQ_USER"
+  description = "RabbitMQ user for backend"
+  type        = "SecureString"
+  value       = var.rabbitmq_user
+}
+
+resource "aws_ssm_parameter" "rabbitmq_password" {
+  name        = "/undercontroll/${var.env}/backend/RABBITMQ_PASSWORD"
+  description = "RabbitMQ password for backend"
+  type        = "SecureString"
+  value       = var.rabbitmq_password
+}
+
+resource "aws_ssm_parameter" "jwt_secret" {
+  name        = "/undercontroll/${var.env}/backend/JWT_SECRET"
+  description = "JWT secret for backend"
+  type        = "SecureString"
+  value       = var.jwt_secret
+}
+
+resource "aws_ssm_parameter" "mail_host" {
+  name        = "/undercontroll/${var.env}/backend/MAIL_HOST"
+  description = "Mail host for backend"
+  type        = "String"
+  value       = var.mail_host
+}
+
+resource "aws_ssm_parameter" "mail_port" {
+  name        = "/undercontroll/${var.env}/backend/MAIL_PORT"
+  description = "Mail port for backend"
+  type        = "String"
+  value       = var.mail_port
+}
+
+resource "aws_ssm_parameter" "mail_username" {
+  name        = "/undercontroll/${var.env}/backend/MAIL_USERNAME"
+  description = "Mail username for backend"
+  type        = "SecureString"
+  value       = var.mail_username
+}
+
+resource "aws_ssm_parameter" "mail_password" {
+  name        = "/undercontroll/${var.env}/backend/MAIL_PASSWORD"
+  description = "Mail password for backend"
+  type        = "SecureString"
+  value       = var.mail_password
+}
+
 # module "s3" {
 #   source = "./modules/s3"
 #   env    = var.env
