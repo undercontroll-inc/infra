@@ -34,22 +34,21 @@ sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
 sudo systemctl reload sshd
 
 # Fetch secrets from SSM Parameter Store
-export ENV="${env}"
 export AWS_REGION="us-east-1"
 
 # Create .env file from SSM parameters
 cat > /opt/app/.env << 'EOF'
-DB_HOST=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/DB_HOST" --query "Parameter.Value" --output text)
-DB_USERNAME=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/DB_USERNAME" --with-decryption --query "Parameter.Value" --output text)
-DB_PASSWORD=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/DB_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
-RABBITMQ_HOST=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/RABBITMQ_HOST" --query "Parameter.Value" --output text)
-RABBITMQ_USER=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/RABBITMQ_USER" --with-decryption --query "Parameter.Value" --output text)
-RABBITMQ_PASSWORD=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/RABBITMQ_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
-JWT_SECRET=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/JWT_SECRET" --with-decryption --query "Parameter.Value" --output text)
-MAIL_HOST=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/MAIL_HOST" --query "Parameter.Value" --output text)
-MAIL_PORT=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/MAIL_PORT" --query "Parameter.Value" --output text)
-MAIL_USERNAME=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/MAIL_USERNAME" --with-decryption --query "Parameter.Value" --output text)
-MAIL_PASSWORD=$(aws ssm get-parameter --name "/undercontroll/${ENV}/backend/MAIL_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
+DB_HOST=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/DB_HOST" --query "Parameter.Value" --output text)
+DB_USERNAME=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/DB_USERNAME" --with-decryption --query "Parameter.Value" --output text)
+DB_PASSWORD=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/DB_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
+RABBITMQ_HOST=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/RABBITMQ_HOST" --query "Parameter.Value" --output text)
+RABBITMQ_USER=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/RABBITMQ_USER" --with-decryption --query "Parameter.Value" --output text)
+RABBITMQ_PASSWORD=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/RABBITMQ_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
+JWT_SECRET=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/JWT_SECRET" --with-decryption --query "Parameter.Value" --output text)
+MAIL_HOST=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/MAIL_HOST" --query "Parameter.Value" --output text)
+MAIL_PORT=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/MAIL_PORT" --query "Parameter.Value" --output text)
+MAIL_USERNAME=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/MAIL_USERNAME" --with-decryption --query "Parameter.Value" --output text)
+MAIL_PASSWORD=$(aws ssm get-parameter --name "/undercontroll/${env}/backend/MAIL_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
 EOF
 
 chmod 600 /opt/app/.env
