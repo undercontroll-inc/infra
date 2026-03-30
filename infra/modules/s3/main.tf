@@ -1,62 +1,30 @@
-resource "aws_s3_bucket" "frontend_bucket" {
-  bucket = "${var.env}-frontend-bucket"
+resource "aws_s3_bucket" "main" {
+  bucket = "${var.env}-main-bucket"
 
   tags = {
     Env = var.env
   }
 }
 
-# Bloqueia acesso publico ao bucket
-resource "aws_s3_bucket_public_access_block" "frontend_bucket" {
-  bucket = aws_s3_bucket.frontend_bucket
+resource "aws_s3_bucket_public_access_block" "main_access_block" {
+  bucket = aws_s3_bucket.main.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
-# Configuração do CORS necessaria para o bucket ser acessado corretamente pelo cloudfront
-resource "aws_s3_bucket_cors_configuration" "frontend_bucket" {
-  bucket = aws_s3_bucket.frontend_bucket.id
+resource "aws_s3_bucket_intelligent_tiering_configuration" "main_tiering_configuration" {
+  bucket = aws_s3_bucket.main.id
+  name   = "EntireBucket"
 
-  cors_rule {
-    allowed_headers = ["*"]
-    allowed_methods = ["GET", "HEAD"]
-    allowed_origins = ["*"]
-    expose_headers  = ["ETag"]
-    max_age_seconds = 3600
+  tiering {
+    access_tier = "DEEP_ARCHIVE_ACCESS"
+    days        = 180
   }
-}
-
-# Policy necessaria para o bucket receber acesso de leitura pelo cloudfront
-data "aws_iam_policy_document" "frontend_bucket_policy" {
-  statement {
-    sid    = "AllowCloudFrontServicePrincipalReadOnly"
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["cloudfront.amazonaws.com"]
-    }
-
-    actions = [
-      "s3:GetObject"
-    ]
-    resources = [
-      "${aws_s3_bucket.frontend_bucket.arn}}/*"
-    ]
-
-    condition {
-      test     = "StringEquals"
-      variable = "AWS:SourceArn"
-      values   = [aws_cloudfront_distribution.s3_distribution.arn]
-    }
+  tiering {
+    access_tier = "ARCHIVE_ACCESS"
+    days        = 125
   }
-}
-
-# Faz o link entre a policy e o bucket
-resource "aws_s3_bucket_policy" "frontend_policy" {
-  bucket = aws_s3_bucket.frontend_bucket.id
-  policy = data.aws_iam_policy_document.processed_bucket_policy.json
 }
