@@ -5,8 +5,8 @@ resource "aws_s3_bucket" "export" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "main_access_block" {
-  bucket = aws_s3_bucket.main.id
+resource "aws_s3_bucket_public_access_block" "export_access_block" {
+  bucket = aws_s3_bucket.export.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -14,8 +14,8 @@ resource "aws_s3_bucket_public_access_block" "main_access_block" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_intelligent_tiering_configuration" "main_tiering_configuration" {
-  bucket = aws_s3_bucket.main.id
+resource "aws_s3_bucket_intelligent_tiering_configuration" "export_tiering_configuration" {
+  bucket = aws_s3_bucket.export.id
   name   = "EntireBucket"
 
   tiering {
