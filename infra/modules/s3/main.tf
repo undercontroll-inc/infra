@@ -1,5 +1,5 @@
-resource "aws_s3_bucket" "main" {
-  name   = "${var.env}-main-bucket"
+resource "aws_s3_bucket" "export" {
+  bucket   = "${var.env}-main-bucket"
   tags = {
     Env = var.env
   }
