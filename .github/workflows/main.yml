@@ -1,23 +1,46 @@
-name: Undercontroll main workflow
+name: Undercontroll infra workflow
 
 on:
   workflow_dispatch:
+    inputs:
+      destroy:
+        description: "Destroy infrastructure"
+        required: true
+        default: false
+        type: boolean
   push:
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 
 permissions:
   contents: read
 
+concurrency:
+  group: infra-main-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
       destroy: ${{ steps.set.outputs.destroy }}
+      apply: ${{ steps.set.outputs.apply }}
     steps:
       - name: Set destroy variable
         id: set
-        run: echo "destroy=true" >> $GITHUB_OUTPUT
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "destroy=${{ inputs.destroy }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "destroy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ inputs.destroy }}" = "true" ]; then
+            echo "apply=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "apply=true" >> "$GITHUB_OUTPUT"
+          fi
 
   terraform:
     needs: prepare
@@ -26,6 +49,7 @@ jobs:
       environment: dev
       aws-region: "us-east-1"
       destroy: ${{ fromJSON(needs.prepare.outputs.destroy) }}
+      apply: ${{ fromJSON(needs.prepare.outputs.apply) }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

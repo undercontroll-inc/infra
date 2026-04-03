@@ -12,6 +12,9 @@ on:
       destroy:
         required: true
         type: boolean
+      apply:
+        required: true
+        type: boolean
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -45,6 +48,9 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    concurrency:
+      group: terraform-${{ inputs.environment }}
+      cancel-in-progress: true
     outputs:
       rabbitmq_ip: ${{ steps.outputs.outputs.rabbitmq_ip }}
       frontend_public_ip: ${{ steps.outputs.outputs.frontend_public_ip }}
@@ -118,7 +124,7 @@ jobs:
             -out="${{ inputs.environment }}.plan"
 
       - name: Terraform apply
-        if: ${{ !inputs.destroy }}
+        if: ${{ !inputs.destroy && inputs.apply }}
         id: terraform-apply
         run: |
           cd infra &&
@@ -127,7 +133,7 @@ jobs:
 
       - name: Get Terraform Outputs
         id: outputs
-        if: ${{ !inputs.destroy }}
+        if: ${{ !inputs.destroy && inputs.apply }}
         run: |
           cd infra
           echo "rabbitmq_ip=$(terraform output -raw rabbitmq_private_ip)" >> $GITHUB_OUTPUT
@@ -137,27 +143,66 @@ jobs:
           echo "backend_instance_id=$(terraform output -raw backend_instance_id)" >> $GITHUB_OUTPUT
           echo "frontend_instance_id=$(terraform output -raw frontend_instance_id)" >> $GITHUB_OUTPUT
 
-      - name: Sync secrets to frontend repo
-        if: ${{ !inputs.destroy }}
+      - name: Configure frontend nginx via SSM
+        if: ${{ !inputs.destroy && inputs.apply }}
+        env:
+          FRONTEND_INSTANCE_ID: ${{ steps.outputs.outputs.frontend_instance_id }}
+          BACKEND_PRIVATE_IP: ${{ steps.outputs.outputs.backend_private_ip }}
+        run: |
+          set -euo pipefail
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$FRONTEND_INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Configure frontend nginx" \
+            --timeout-seconds 180 \
+            --parameters 'commands=[
+              "set -e",
+              "curl -fsSL -H '\''Authorization: token ${{ secrets.GH_PAT }}'\'' -H '\''Accept: application/vnd.github.v3.raw'\'' https://api.github.com/repos/undercontroll-inc/infra/contents/nginx/frontend.conf -o /tmp/frontend.conf",
+              "sed -i '\''s|${BACKEND_PRIVATE_IP}|${{ env.BACKEND_PRIVATE_IP }}|g'\'' /tmp/frontend.conf",
+              "cp /tmp/frontend.conf /etc/nginx/conf.d/default.conf",
+              "nginx -t",
+              "nginx -s reload"
+            ]' \
+            --region "${{ inputs.aws-region }}" \
+            --query "Command.CommandId" --output text)
+
+          aws ssm wait command-executed \
+            --command-id "$COMMAND_ID" \
+            --instance-id "$FRONTEND_INSTANCE_ID" \
+            --region "${{ inputs.aws-region }}"
+
+          STATUS=$(aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "$FRONTEND_INSTANCE_ID" \
+            --region "${{ inputs.aws-region }}" \
+            --query "Status" --output text)
+
+          if [ "$STATUS" != "Success" ]; then
+            echo "Frontend nginx configuration failed with status: $STATUS" >&2
+            exit 1
+          fi
+
+      - name: Sync variables to frontend repo
+        if: ${{ !inputs.destroy && inputs.apply }}
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           FRONTEND_PUBLIC_IP: ${{ steps.outputs.outputs.frontend_public_ip }}
           BACKEND_PRIVATE_IP: ${{ steps.outputs.outputs.backend_private_ip }}
         run: |
-          gh secret set EC2_HOST \
+          gh variable set EC2_HOST \
             --repo undercontroll-inc/frontend \
             --body "${FRONTEND_PUBLIC_IP}"
 
-          gh secret set VITE_API_URL \
+          gh variable set VITE_API_URL \
             --repo undercontroll-inc/frontend \
             --body "/v1/api"
 
-          gh secret set BACKEND_PRIVATE_IP \
+          gh variable set BACKEND_PRIVATE_IP \
             --repo undercontroll-inc/frontend \
             --body "${BACKEND_PRIVATE_IP}"
 
-      - name: Sync secrets to organization
-        if: ${{ !inputs.destroy }}
+      - name: Sync variables to organization
+        if: ${{ !inputs.destroy && inputs.apply }}
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
           FRONTEND_PUBLIC_IP: ${{ steps.outputs.outputs.frontend_public_ip }}
@@ -166,25 +211,21 @@ jobs:
           DATABASE_PRIVATE_IP: ${{ steps.outputs.outputs.database_private_ip }}
           BACKEND_INSTANCE_ID: ${{ steps.outputs.outputs.backend_instance_id }}
           FRONTEND_INSTANCE_ID: ${{ steps.outputs.outputs.frontend_instance_id }}
-
-          # FRONTEND_BUCKET_NAME: ${{ steps.outputs.outputs.frontend_bucket_name }}
-          # CLOUDFRONT_DOMAIN_NAME: ${{ steps.outputs.outputs.cloudfront_domain_name }}
-          # CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.outputs.outputs.cloudfront_distribution_id }}
         run: |
-          gh secret set RABBITMQ_HOST \
-            --org undercontroll-inc --visibility all \
+          gh variable set RABBITMQ_HOST \
+            --org undercontroll-inc \
             --body "${RABBITMQ_IP}"
 
-          gh secret set DB_HOST \
-            --org undercontroll-inc --visibility all \
+          gh variable set DB_HOST \
+            --org undercontroll-inc \
             --body "${DATABASE_PRIVATE_IP}"
 
-          gh secret set BACKEND_EC2_HOST \
-            --org undercontroll-inc --visibility all \
+          gh variable set BACKEND_EC2_HOST \
+            --org undercontroll-inc \
             --body "${BACKEND_PRIVATE_IP}"
 
-          gh secret set BASTION_HOST \
-            --org undercontroll-inc --visibility all \
+          gh variable set BASTION_HOST \
+            --org undercontroll-inc \
             --body "${FRONTEND_PUBLIC_IP}"
 
           # gh secret set FRONTEND_BUCKET_NAME \
@@ -199,10 +240,10 @@ jobs:
           #   --org undercontroll-inc --visibility all \
           #   --body "${CLOUDFRONT_DISTRIBUTION_ID}"
 
-          gh secret set BACKEND_INSTANCE_ID \
-             --org undercontroll-inc --visibility all \
+          gh variable set BACKEND_INSTANCE_ID \
+             --org undercontroll-inc \
              --body "${BACKEND_INSTANCE_ID}"
 
-          gh secret set FRONTEND_INSTANCE_ID \
-            --org undercontroll-inc --visibility all \
+          gh variable set FRONTEND_INSTANCE_ID \
+            --org undercontroll-inc \
             --body "${FRONTEND_INSTANCE_ID}"
