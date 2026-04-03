@@ -9,7 +9,8 @@ resource "aws_instance" "frontend_instance" {
   user_data_replace_on_change = true
 
   user_data = templatefile("${path.module}/frontend-userdata.sh.tpl", {
-    deploy_public_key = var.deploy_public_key
+    deploy_public_key  = var.deploy_public_key
+    backend_private_ip = aws_instance.backend_instance.private_ip
   })
 
   tags = {
