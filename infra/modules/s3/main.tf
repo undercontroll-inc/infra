@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "export" {
-  bucket   = "${var.env}-main-bucket"
+  bucket = "undercontroll-${var.env}-export-bucket"
+
   tags = {
     Env = var.env
   }
