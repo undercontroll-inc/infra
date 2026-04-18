@@ -1,10 +1,10 @@
-resource "aws_subnet" "frontend_public" {
+resource "aws_subnet" "alb_public" {
   vpc_id                  = var.vpc_id
-  cidr_block              = var.frontend_public_subnet_cidr
+  cidr_block              = var.alb_public_subnet_cidr
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.env}-frontend-public"
+    Name = "${var.env}-alb-public"
     Env  = var.env
   }
 }

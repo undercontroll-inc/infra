@@ -1,7 +1,7 @@
 # SG para o frontend liberamos trafego publico para as portas http e https
-resource "aws_security_group" "frontend" {
-  name        = "${var.env}-frontend-sg"
-  description = "Frontend application: allow HTTP/HTTPS inbound from internet"
+resource "aws_security_group" "alb" {
+  name        = "${var.env}-alb-sg"
+  description = "ALB application: allow HTTP/HTTPS inbound from internet"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -36,30 +36,30 @@ resource "aws_security_group" "frontend" {
   }
 
   tags = {
-    Name = "${var.env}-frontend-sg"
+    Name = "${var.env}-alb-sg"
     Env  = var.env
   }
 }
 
 resource "aws_security_group" "backend" {
   name        = "${var.env}-backend-sg"
-  description = "Backend services: allow inbound only from frontend SG"
+  description = "Backend services: allow inbound only from alb SG"
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "HTTP reverse proxy from frontend"
+    description     = "HTTP reverse proxy from alb"
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [aws_security_group.frontend.id]
+    security_groups = [aws_security_group.alb.id]
   }
 
   ingress {
-    description     = "App port from frontend"
+    description     = "App port from alb"
     from_port       = var.backend_port
     to_port         = var.backend_port
     protocol        = "tcp"
-    security_groups = [aws_security_group.frontend.id]
+    security_groups = [aws_security_group.alb.id]
   }
 
   ingress {
@@ -67,7 +67,7 @@ resource "aws_security_group" "backend" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [aws_security_group.frontend.id]
+    security_groups = [aws_security_group.alb.id]
   }
 
   egress {
@@ -110,7 +110,7 @@ resource "aws_security_group" "services" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [aws_security_group.frontend.id]
+    security_groups = [aws_security_group.alb.id]
   }
 
   egress {
@@ -144,7 +144,7 @@ resource "aws_security_group" "database" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [aws_security_group.frontend.id]
+    security_groups = [aws_security_group.alb.id]
   }
 
   egress {

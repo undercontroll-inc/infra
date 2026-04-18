@@ -1,5 +1,5 @@
-output "frontend_public_subnet_id" {
-  value = aws_subnet.frontend_public.id
+output "alb_public_subnet_id" {
+  value = aws_subnet.alb_public.id
 }
 
 output "services_private_subnet_id" {

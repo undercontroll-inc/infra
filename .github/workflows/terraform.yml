@@ -56,6 +56,9 @@ jobs:
       frontend_public_ip: ${{ steps.outputs.outputs.frontend_public_ip }}
       backend_private_ip: ${{ steps.outputs.outputs.backend_private_ip }}
       database_private_ip: ${{ steps.outputs.outputs.database_private_ip }}
+      frontend_bucket_name: ${{ steps.outputs.outputs.frontend_bucket_name }}
+      cloudfront_distribution_id: ${{ steps.outputs.outputs.cloudfront_distribution_id }}
+      cloudfront_domain_name: ${{ steps.outputs.outputs.cloudfront_domain_name }}
     defaults:
       run:
         shell: bash
@@ -142,25 +145,33 @@ jobs:
           echo "database_private_ip=$(terraform output -raw database_private_ip)" >> $GITHUB_OUTPUT
           echo "backend_instance_id=$(terraform output -raw backend_instance_id)" >> $GITHUB_OUTPUT
           echo "frontend_instance_id=$(terraform output -raw frontend_instance_id)" >> $GITHUB_OUTPUT
+          echo "frontend_bucket_name=$(terraform output -raw frontend_bucket_name)" >> $GITHUB_OUTPUT
+          echo "cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
+          echo "cloudfront_domain_name=$(terraform output -raw cloudfront_domain_name)" >> $GITHUB_OUTPUT
 
       - name: Sync variables to frontend repo
         if: ${{ !inputs.destroy && inputs.apply }}
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
-          FRONTEND_PUBLIC_IP: ${{ steps.outputs.outputs.frontend_public_ip }}
-          BACKEND_PRIVATE_IP: ${{ steps.outputs.outputs.backend_private_ip }}
+          FRONTEND_BUCKET_NAME: ${{ steps.outputs.outputs.frontend_bucket_name }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.outputs.outputs.cloudfront_distribution_id }}
+          CLOUDFRONT_DOMAIN_NAME: ${{ steps.outputs.outputs.cloudfront_domain_name }}
         run: |
-          gh variable set EC2_HOST \
-            --repo undercontroll-inc/frontend \
-            --body "${FRONTEND_PUBLIC_IP}"
-
           gh variable set VITE_API_URL \
             --repo undercontroll-inc/frontend \
             --body "/v1/api"
 
-          gh variable set BACKEND_PRIVATE_IP \
+          gh variable set FRONTEND_BUCKET_NAME \
             --repo undercontroll-inc/frontend \
-            --body "${BACKEND_PRIVATE_IP}"
+            --body "${FRONTEND_BUCKET_NAME}"
+
+          gh variable set CLOUDFRONT_DISTRIBUTION_ID \
+            --repo undercontroll-inc/frontend \
+            --body "${CLOUDFRONT_DISTRIBUTION_ID}"
+
+          gh variable set CLOUDFRONT_DOMAIN_NAME \
+            --repo undercontroll-inc/frontend \
+            --body "${CLOUDFRONT_DOMAIN_NAME}"
 
       - name: Sync variables to organization
         if: ${{ !inputs.destroy && inputs.apply }}
@@ -172,39 +183,51 @@ jobs:
           DATABASE_PRIVATE_IP: ${{ steps.outputs.outputs.database_private_ip }}
           BACKEND_INSTANCE_ID: ${{ steps.outputs.outputs.backend_instance_id }}
           FRONTEND_INSTANCE_ID: ${{ steps.outputs.outputs.frontend_instance_id }}
+          FRONTEND_BUCKET_NAME: ${{ steps.outputs.outputs.frontend_bucket_name }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.outputs.outputs.cloudfront_distribution_id }}
+          CLOUDFRONT_DOMAIN_NAME: ${{ steps.outputs.outputs.cloudfront_domain_name }}
         run: |
           gh variable set RABBITMQ_HOST \
             --org undercontroll-inc \
+            --visibility all \
             --body "${RABBITMQ_IP}"
 
           gh variable set DB_HOST \
             --org undercontroll-inc \
+            --visibility all \
             --body "${DATABASE_PRIVATE_IP}"
 
           gh variable set BACKEND_EC2_HOST \
             --org undercontroll-inc \
+            --visibility all \
             --body "${BACKEND_PRIVATE_IP}"
 
           gh variable set BASTION_HOST \
             --org undercontroll-inc \
+            --visibility all \
             --body "${FRONTEND_PUBLIC_IP}"
 
-          # gh secret set FRONTEND_BUCKET_NAME \
-          #   --org undercontroll-inc --visibility all \
-          #   --body "${FRONTEND_BUCKET_NAME}"
+          gh variable set FRONTEND_BUCKET_NAME \
+            --org undercontroll-inc \
+            --visibility all \
+            --body "${FRONTEND_BUCKET_NAME}"
 
-          # gh secret set CLOUDFRONT_DOMAIN_NAME \
-          #   --org undercontroll-inc --visibility all \
-          #   --body "${CLOUDFRONT_DOMAIN_NAME}"
+          gh variable set CLOUDFRONT_DISTRIBUTION_ID \
+            --org undercontroll-inc \
+            --visibility all \
+            --body "${CLOUDFRONT_DISTRIBUTION_ID}"
 
-          # gh secret set CLOUDFRONT_DISTRIBUTION_ID \
-          #   --org undercontroll-inc --visibility all \
-          #   --body "${CLOUDFRONT_DISTRIBUTION_ID}"
+          gh variable set CLOUDFRONT_DOMAIN_NAME \
+            --org undercontroll-inc \
+            --visibility all \
+            --body "${CLOUDFRONT_DOMAIN_NAME}"
 
           gh variable set BACKEND_INSTANCE_ID \
              --org undercontroll-inc \
+            --visibility all \
              --body "${BACKEND_INSTANCE_ID}"
 
           gh variable set FRONTEND_INSTANCE_ID \
             --org undercontroll-inc \
+            --visibility all \
             --body "${FRONTEND_INSTANCE_ID}"

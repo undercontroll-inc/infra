@@ -14,7 +14,7 @@ variable "nat_gateway_id" {
   type = string
 }
 
-variable "frontend_public_subnet_id" {
+variable "alb_public_subnet_id" {
   type = string
 }
 

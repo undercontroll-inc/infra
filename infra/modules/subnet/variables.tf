@@ -6,7 +6,7 @@ variable "vpc_id" {
   type = string
 }
 
-variable "frontend_public_subnet_cidr" {
+variable "alb_public_subnet_cidr" {
   type    = string
   default = "10.0.1.0/24"
 }

@@ -13,8 +13,8 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_route_table_association" "frontend_public" {
-  subnet_id      = var.frontend_public_subnet_id
+resource "aws_route_table_association" "alb_public" {
+  subnet_id      = var.alb_public_subnet_id
   route_table_id = aws_route_table.public.id
 }
 

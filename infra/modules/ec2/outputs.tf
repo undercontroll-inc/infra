@@ -6,16 +6,24 @@ output "services_private_ip" {
   value = aws_instance.services_instance.private_ip
 }
 
-output "frontend_instance_id" {
-  value = aws_instance.frontend_instance.id
+output "alb_instance_id" {
+  value = aws_instance.alb_instance.id
 }
 
-output "frontend_private_ip" {
-  value = aws_instance.frontend_instance.private_ip
+output "alb_private_ip" {
+  value = aws_instance.alb_instance.private_ip
 }
 
-output "frontend_public_ip" {
-  value = aws_instance.frontend_instance.public_ip
+output "alb_public_ip" {
+  value = aws_eip.alb.public_ip
+}
+
+output "alb_eip_public_ip" {
+  value = aws_eip.alb.public_ip
+}
+
+output "alb_eip_public_dns" {
+  value = aws_eip.alb.public_dns
 }
 
 output "backend_instance_id" {

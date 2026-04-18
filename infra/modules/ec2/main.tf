@@ -1,20 +1,20 @@
-resource "aws_instance" "frontend_instance" {
+resource "aws_instance" "alb_instance" {
   ami           = data.aws_ami.ubuntu_ami.id
-  instance_type = var.frontend_instance_type
+  instance_type = var.alb_instance_type
 
-  subnet_id              = var.frontend_subnet_id
-  vpc_security_group_ids = [var.frontend_security_group_id]
+  subnet_id              = var.alb_subnet_id
+  vpc_security_group_ids = [var.alb_security_group_id]
   key_name               = var.key_pair_name
 
   user_data_replace_on_change = true
 
-  user_data = templatefile("${path.module}/frontend-userdata.sh.tpl", {
+  user_data = templatefile("${path.module}/alb-userdata.sh.tpl", {
     deploy_public_key  = var.deploy_public_key
     backend_private_ip = aws_instance.backend_instance.private_ip
   })
 
   tags = {
-    Name = "${var.env}-frontend-instance"
+    Name = "${var.env}-alb-instance"
     Env  = var.env
   }
 }
@@ -80,4 +80,18 @@ resource "aws_instance" "database_instance" {
     Name = "${var.env}-database-instance"
     Env  = var.env
   }
+}
+
+resource "aws_eip" "alb" {
+  domain = "vpc"
+
+  tags = {
+    Name = "${var.env}-alb-eip"
+    Env  = var.env
+  }
+}
+
+resource "aws_eip_association" "alb" {
+  instance_id   = aws_instance.alb_instance.id
+  allocation_id = aws_eip.alb.id
 }

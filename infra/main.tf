@@ -20,6 +20,8 @@ provider "aws" {
   region = var.region
 }
 
+data "aws_caller_identity" "current" {}
+
 module "vpc" {
   source         = "./modules/vpc"
   env            = var.env
@@ -36,7 +38,7 @@ module "subnets" {
   source                       = "./modules/subnet"
   env                          = var.env
   vpc_id                       = module.vpc.vpc_id
-  frontend_public_subnet_cidr  = var.frontend_public_subnet_cidr
+  alb_public_subnet_cidr       = var.alb_public_subnet_cidr
   services_private_subnet_cidr = var.services_private_subnet_cidr
   backend_private_subnet_cidr  = var.backend_private_subnet_cidr
   database_private_subnet_cidr = var.database_private_subnet_cidr
@@ -45,7 +47,7 @@ module "subnets" {
 module "ngtw" {
   source           = "./modules/ngtw"
   env              = var.env
-  public_subnet_id = module.subnets.frontend_public_subnet_id
+  public_subnet_id = module.subnets.alb_public_subnet_id
 
   depends_on = [module.igtw]
 }
@@ -56,7 +58,7 @@ module "route_tables" {
   vpc_id                     = module.vpc.vpc_id
   igw_id                     = module.igtw.igw_id
   nat_gateway_id             = module.ngtw.nat_gateway_id
-  frontend_public_subnet_id  = module.subnets.frontend_public_subnet_id
+  alb_public_subnet_id       = module.subnets.alb_public_subnet_id
   services_private_subnet_id = module.subnets.services_private_subnet_id
   backend_private_subnet_id  = module.subnets.backend_private_subnet_id
   database_private_subnet_id = module.subnets.database_private_subnet_id
@@ -72,11 +74,11 @@ module "security_groups" {
 module "ec2" {
   source                     = "./modules/ec2"
   env                        = var.env
-  frontend_subnet_id         = module.subnets.frontend_public_subnet_id
+  alb_subnet_id              = module.subnets.alb_public_subnet_id
   services_subnet_id         = module.subnets.services_private_subnet_id
   backend_subnet_id          = module.subnets.backend_private_subnet_id
   database_subnet_id         = module.subnets.database_private_subnet_id
-  frontend_security_group_id = module.security_groups.frontend_sg_id
+  alb_security_group_id      = module.security_groups.alb_sg_id
   services_security_group_id = module.security_groups.services_sg_id
   backend_security_group_id  = module.security_groups.backend_sg_id
   database_security_group_id = module.security_groups.database_sg_id
@@ -93,4 +95,11 @@ module "ec2" {
 module "s3" {
   source = "./modules/s3"
   env    = var.env
+}
+
+module "frontend_cdn" {
+  source        = "./modules/frontend_cdn"
+  env           = var.env
+  lb_origin_dns = module.ec2.frontend_eip_public_dns
+  account_id    = data.aws_caller_identity.current.account_id
 }

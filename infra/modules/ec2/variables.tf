@@ -2,7 +2,7 @@ variable "env" {
   type = string
 }
 
-variable "frontend_security_group_id" {
+variable "alb_security_group_id" {
   type = string
 }
 
@@ -18,7 +18,7 @@ variable "database_security_group_id" {
   type = string
 }
 
-variable "frontend_instance_type" {
+variable "alb_instance_type" {
   type    = string
   default = "t2.micro"
 }
@@ -38,7 +38,7 @@ variable "database_instance_type" {
   default = "t2.micro"
 }
 
-variable "frontend_subnet_id" {
+variable "alb_subnet_id" {
   type = string
 }
 

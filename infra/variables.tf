@@ -15,8 +15,8 @@ variable "vpc_cidr_block" {
   default     = "10.0.0.0/16"
 }
 
-variable "frontend_public_subnet_cidr" {
-  description = "CIDR block for the frontend public subnet"
+variable "alb_public_subnet_cidr" {
+  description = "CIDR block for the alb public subnet"
   type        = string
   default     = "10.0.1.0/24"
 }
@@ -63,7 +63,7 @@ variable "key_pair_name" {
 }
 
 variable "deploy_public_key" {
-  description = "SSH public key for the limited 'deploy' OS user on the frontend EC2 (used by CI/CD SCP). Generate a dedicated keypair: ssh-keygen -t ed25519 -C 'deploy@undercontroll-ci'"
+  description = "SSH public key for the limited 'deploy' OS user on the alb EC2 (used by CI/CD SCP). Generate a dedicated keypair: ssh-keygen -t ed25519 -C 'deploy@undercontroll-ci'"
   type        = string
   sensitive   = true
 }
