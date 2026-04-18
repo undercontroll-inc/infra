@@ -100,6 +100,6 @@ module "s3" {
 module "frontend_cdn" {
   source        = "./modules/frontend_cdn"
   env           = var.env
-  lb_origin_dns = module.ec2.frontend_eip_public_dns
+  lb_origin_dns = module.ec2.alb_eip_public_dns
   account_id    = data.aws_caller_identity.current.account_id
 }
