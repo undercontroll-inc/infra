@@ -70,6 +70,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform-version: 1.8.3
+          terraform_wrapper: false
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -171,6 +172,11 @@ jobs:
             --org undercontroll-inc \
             --visibility all \
             --body "${CORE_IP_2}"
+
+          gh variable set BACKEND_EC2_HOST \
+            --org undercontroll-inc \
+            --visibility all \
+            --body "${CORE_IP_1}"
 
           gh variable set NOTIFICATION_EC2_HOST \
             --org undercontroll-inc \
