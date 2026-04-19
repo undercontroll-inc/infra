@@ -9,8 +9,8 @@ resource "aws_instance" "alb_instance" {
   user_data_replace_on_change = true
 
   user_data = templatefile("${path.module}/alb-userdata.sh.tpl", {
-    deploy_public_key  = var.deploy_public_key
-    backend_private_ip = aws_instance.backend_instance.private_ip
+    deploy_public_key = var.deploy_public_key
+    core_backend_ips  = [for i in aws_instance.backend : i.private_ip]
   })
 
   tags = {
@@ -18,6 +18,7 @@ resource "aws_instance" "alb_instance" {
     Env  = var.env
   }
 }
+
 resource "aws_instance" "services_instance" {
   ami           = data.aws_ami.ubuntu_ami.id
   instance_type = var.services_instance_type
@@ -27,7 +28,6 @@ resource "aws_instance" "services_instance" {
   key_name               = var.key_pair_name
 
   user_data_replace_on_change = true
-
 
   user_data = templatefile("${path.module}/rabbitmq-userdata.sh.tpl", {
     rabbitmq_password = var.rabbitmq_password
@@ -40,7 +40,8 @@ resource "aws_instance" "services_instance" {
   }
 }
 
-resource "aws_instance" "backend_instance" {
+resource "aws_instance" "backend" {
+  for_each      = toset(["1", "2"])
   ami           = data.aws_ami.ubuntu_ami.id
   instance_type = var.backend_instance_type
 
@@ -55,7 +56,27 @@ resource "aws_instance" "backend_instance" {
   })
 
   tags = {
-    Name = "${var.env}-backend-instance"
+    Name = "${var.env}-core-${each.key}"
+    Env  = var.env
+  }
+}
+
+resource "aws_instance" "notification" {
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.backend_instance_type
+
+  subnet_id              = var.backend_subnet_id
+  vpc_security_group_ids = [var.backend_security_group_id]
+  key_name               = var.key_pair_name
+
+  user_data_replace_on_change = true
+
+  user_data = templatefile("${path.module}/backend-userdata.sh.tpl", {
+    deploy_public_key = var.deploy_public_key
+  })
+
+  tags = {
+    Name = "${var.env}-notification"
     Env  = var.env
   }
 }
@@ -69,7 +90,6 @@ resource "aws_instance" "database_instance" {
   key_name               = var.key_pair_name
 
   user_data_replace_on_change = true
-
 
   user_data = templatefile("${path.module}/database-userdata.sh.tpl", {
     db_username = var.db_username

@@ -26,12 +26,20 @@ output "alb_eip_public_dns" {
   value = aws_eip.alb.public_dns
 }
 
-output "backend_instance_id" {
-  value = aws_instance.backend_instance.id
+output "core_instance_ids" {
+  value = [for i in aws_instance.backend : i.id]
 }
 
-output "backend_private_ip" {
-  value = aws_instance.backend_instance.private_ip
+output "core_private_ips" {
+  value = [for i in aws_instance.backend : i.private_ip]
+}
+
+output "notification_instance_id" {
+  value = aws_instance.notification.id
+}
+
+output "notification_private_ip" {
+  value = aws_instance.notification.private_ip
 }
 
 output "database_instance_id" {
