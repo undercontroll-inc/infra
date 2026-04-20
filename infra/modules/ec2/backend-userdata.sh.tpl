@@ -19,8 +19,6 @@ sudo chown -R deploy:deploy /home/deploy/.ssh
 mkdir -p /opt/app
 sudo chown -R deploy:deploy /opt/app
 
-sudo chown -R deploy:deploy /opt/app/nginx
-
 echo "deploy ALL=(ALL) NOPASSWD: /usr/bin/docker, /usr/bin/docker compose *" \
   > /etc/sudoers.d/deploy-docker
 chmod 440 /etc/sudoers.d/deploy-docker

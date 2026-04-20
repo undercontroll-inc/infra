@@ -3,8 +3,8 @@ services:
     image: ghcr.io/undercontroll-inc/core-api:latest
     container_name: main-service
     restart: unless-stopped
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:postgresql://${DB_HOST}:5432/undercontroll
@@ -49,20 +49,12 @@ services:
       MAIL_PORT: ${MAIL_PORT}
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
-    depends_on:
-      main-service:
-        condition: service_healthy
-    networks:
-      - backend-network
-
-  nginx:
-    image: nginx:1.27-alpine
-    container_name: backend-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/backend.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
     depends_on:
       main-service:
         condition: service_healthy
