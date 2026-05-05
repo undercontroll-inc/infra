@@ -51,5 +51,5 @@ output "database_private_ip" {
 }
 
 output "observability_public_ip" {
-  value = aws_eip.observability.public_ip
+  value = aws_instance.observability_instance.public_ip
 }

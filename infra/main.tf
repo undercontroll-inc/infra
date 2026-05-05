@@ -89,7 +89,7 @@ module "ec2" {
   key_pair_name                   = var.key_pair_name
   deploy_public_key               = var.deploy_public_key
   observability_security_group_id = module.security_groups.observability_sg_id
-  observability_subnet_id         = module.subnets.observability_private_subnet_id
+  observability_subnet_id         = module.subnets.observability_public_subnet_id
   depends_on                      = [module.route_tables]
 }
 
