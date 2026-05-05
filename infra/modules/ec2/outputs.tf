@@ -49,3 +49,7 @@ output "database_instance_id" {
 output "database_private_ip" {
   value = aws_instance.database_instance.private_ip
 }
+
+output "observability_public_ip" {
+  value = aws_eip.observability.public_ip
+}

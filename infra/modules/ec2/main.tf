@@ -102,6 +102,26 @@ resource "aws_instance" "database_instance" {
   }
 }
 
+resource "aws_instance" "observability_instance" {
+  ami           = data.aws_ami.ubuntu_ami.id
+  instance_type = var.observability_instance_type
+
+  subnet_id              = var.observability_subnet_id
+  vpc_security_group_ids = [var.observability_security_group_id]
+  key_name               = var.key_pair_name
+
+  user_data_replace_on_change = true
+
+  user_data = templatefile("${path.module}/observability-userdata.sh.tpl", {
+
+  })
+
+  tags = {
+    Name = "${var.env}-observability-instance"
+    Env  = var.env
+  }
+}
+
 resource "aws_eip" "alb" {
   domain = "vpc"
 

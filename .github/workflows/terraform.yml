@@ -157,6 +157,7 @@ jobs:
           NOTIFICATION_IP: ${{ steps.outputs.outputs.notification_ip }}
           RABBITMQ_IP: ${{ steps.outputs.outputs.rabbitmq_ip }}
           DATABASE_PRIVATE_IP: ${{ steps.outputs.outputs.database_private_ip }}
+          OBSERVABILITY_PUBLIC_IP: ${{ steps.outputs.outputs.observability_public_ip }}
         run: |
           gh variable set BASTION_HOST \
             --org undercontroll-inc \

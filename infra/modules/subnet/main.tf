@@ -38,3 +38,13 @@ resource "aws_subnet" "database_private" {
     Env  = var.env
   }
 }
+
+resource "aws_subnet" "observability_public" {
+  vpc_id     = var.vpc_id
+  cidr_block = var.observability_subnet_cidr
+
+  tags = {
+    Name = "${var.env}-observability"
+    Env  = var.env
+  }
+}

@@ -13,3 +13,7 @@ output "backend_private_subnet_id" {
 output "database_private_subnet_id" {
   value = aws_subnet.database_private.id
 }
+
+output "observability_public_subnet_id" {
+  value = aws_subnet.observability_public.id
+}

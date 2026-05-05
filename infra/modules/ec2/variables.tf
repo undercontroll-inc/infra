@@ -83,3 +83,14 @@ variable "deploy_public_key" {
   sensitive = true
 }
 
+variable "observability_instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+variable "observability_subnet_id" {
+  type = string
+}
+
+variable "observability_security_group_id" {
+  type = string
+}

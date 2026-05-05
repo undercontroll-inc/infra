@@ -72,28 +72,28 @@ module "security_groups" {
 }
 
 module "ec2" {
-  source                     = "./modules/ec2"
-  env                        = var.env
-  alb_subnet_id              = module.subnets.alb_public_subnet_id
-  services_subnet_id         = module.subnets.services_private_subnet_id
-  backend_subnet_id          = module.subnets.backend_private_subnet_id
-  database_subnet_id         = module.subnets.database_private_subnet_id
-  alb_security_group_id      = module.security_groups.alb_sg_id
-  services_security_group_id = module.security_groups.services_sg_id
-  backend_security_group_id  = module.security_groups.backend_sg_id
-  database_security_group_id = module.security_groups.database_sg_id
-  rabbitmq_user              = var.rabbitmq_user
-  rabbitmq_password          = var.rabbitmq_password
-  db_username                = var.db_username
-  db_password                = var.db_password
-  key_pair_name              = var.key_pair_name
-  deploy_public_key          = var.deploy_public_key
-
-  depends_on = [module.route_tables]
+  source                          = "./modules/ec2"
+  env                             = var.env
+  alb_subnet_id                   = module.subnets.alb_public_subnet_id
+  services_subnet_id              = module.subnets.services_private_subnet_id
+  backend_subnet_id               = module.subnets.backend_private_subnet_id
+  database_subnet_id              = module.subnets.database_private_subnet_id
+  alb_security_group_id           = module.security_groups.alb_sg_id
+  services_security_group_id      = module.security_groups.services_sg_id
+  backend_security_group_id       = module.security_groups.backend_sg_id
+  database_security_group_id      = module.security_groups.database_sg_id
+  rabbitmq_user                   = var.rabbitmq_user
+  rabbitmq_password               = var.rabbitmq_password
+  db_username                     = var.db_username
+  db_password                     = var.db_password
+  key_pair_name                   = var.key_pair_name
+  deploy_public_key               = var.deploy_public_key
+  observability_security_group_id = module.security_groups.observability_sg_id
+  observability_subnet_id         = module.subnets.observability_private_subnet_id
+  depends_on                      = [module.route_tables]
 }
 
 module "s3" {
   source = "./modules/s3"
   env    = var.env
 }
-

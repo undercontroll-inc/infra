@@ -1,0 +1,25 @@
+name: Apply observability configuration
+
+on:
+  workflow_call:
+    inputs:
+      albIp:
+        type: string
+        required: true
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "infra/grafana/datasources/datasource.yml"
+      - "infra/prometheus.yml"
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Apply Prometheus configuration
+        run: sed -i 's/albIp/${{ inputs.albIp }}/' infra/prometheus.yml

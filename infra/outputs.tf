@@ -30,6 +30,10 @@ output "database_private_ip" {
   value = module.ec2.database_private_ip
 }
 
+output "name" {
+  value = module.ec2.name
+}
+
 output "export_bucket_name" {
   value = module.s3.export_bucket_name
 }
