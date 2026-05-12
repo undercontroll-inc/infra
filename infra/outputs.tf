@@ -34,10 +34,6 @@ output "observability_public_ip" {
   value = module.ec2.observability_public_ip
 }
 
-output "name" {
-  value = module.ec2.name
-}
-
 output "export_bucket_name" {
   value = module.s3.export_bucket_name
 }
