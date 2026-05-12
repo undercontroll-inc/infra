@@ -18,6 +18,10 @@ variable "alb_public_subnet_id" {
   type = string
 }
 
+variable "observability_public_subnet_id" {
+  type = string
+}
+
 variable "services_private_subnet_id" {
   type = string
 }

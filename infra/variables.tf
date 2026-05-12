@@ -39,6 +39,12 @@ variable "database_private_subnet_cidr" {
   default     = "10.0.4.0/24"
 }
 
+variable "observability_public_subnet_cidr" {
+  description = "CIDR block for the observability public subnet"
+  type        = string
+  default     = "10.0.5.0/24"
+}
+
 variable "backend_port" {
   description = "Port the backend application listens on"
   type        = number

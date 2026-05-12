@@ -65,3 +65,12 @@ jobs:
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       GH_PAT: ${{ secrets.GH_PAT }}
+  observability:
+    needs: terraform
+    uses: ./.github/workflows/observability.yml
+    with:
+      albIp: ${{ needs.terraform.outputs.alb_public_ip }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}

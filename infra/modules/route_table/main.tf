@@ -18,6 +18,11 @@ resource "aws_route_table_association" "alb_public" {
   route_table_id = aws_route_table.public.id
 }
 
+resource "aws_route_table_association" "observability_public" {
+  subnet_id      = var.observability_public_subnet_id
+  route_table_id = aws_route_table.public.id
+}
+
 # Route table para subnets privadas, fazendo a conexão com o nat gateway para o trafego
 resource "aws_route_table" "private" {
   vpc_id = var.vpc_id

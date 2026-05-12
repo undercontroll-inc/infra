@@ -42,6 +42,7 @@ module "subnets" {
   services_private_subnet_cidr = var.services_private_subnet_cidr
   backend_private_subnet_cidr  = var.backend_private_subnet_cidr
   database_private_subnet_cidr = var.database_private_subnet_cidr
+  observability_subnet_cidr     = var.observability_public_subnet_cidr
 }
 
 module "ngtw" {
@@ -59,6 +60,7 @@ module "route_tables" {
   igw_id                     = module.igtw.igw_id
   nat_gateway_id             = module.ngtw.nat_gateway_id
   alb_public_subnet_id       = module.subnets.alb_public_subnet_id
+  observability_public_subnet_id = module.subnets.observability_public_subnet_id
   services_private_subnet_id = module.subnets.services_private_subnet_id
   backend_private_subnet_id  = module.subnets.backend_private_subnet_id
   database_private_subnet_id = module.subnets.database_private_subnet_id

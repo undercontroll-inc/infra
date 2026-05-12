@@ -42,6 +42,7 @@ resource "aws_subnet" "database_private" {
 resource "aws_subnet" "observability_public" {
   vpc_id     = var.vpc_id
   cidr_block = var.observability_subnet_cidr
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "${var.env}-observability"

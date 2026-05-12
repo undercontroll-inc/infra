@@ -113,7 +113,10 @@ resource "aws_instance" "observability_instance" {
   user_data_replace_on_change = true
 
   user_data = templatefile("${path.module}/observability-userdata.sh.tpl", {
-
+    prometheus_config         = replace(file("${path.module}/../../../prometheus.yml"), "albIp", format("%s:80", aws_eip.alb.public_ip))
+    grafana_datasource_config = file("${path.module}/../../../grafana/datasources/datasource.yml")
+    grafana_dashboards_config = file("${path.module}/../../../grafana/dashboards/dashboards.yml")
+    grafana_dashboard_json    = file("${path.module}/../../../grafana/dashboards/spring-metrics.json")
   })
 
   tags = {

@@ -22,4 +22,3 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Apply Prometheus configuration
-        run: sed -i 's/albIp/${{ inputs.albIp }}/' infra/prometheus.yml

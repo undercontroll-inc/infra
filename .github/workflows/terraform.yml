@@ -146,6 +146,7 @@ jobs:
           echo "core_ip_2=$(echo "$CORE_IPS" | jq -r '.[1]')" >> $GITHUB_OUTPUT
           echo "notification_ip=$(terraform output -raw notification_private_ip)" >> $GITHUB_OUTPUT
           echo "database_private_ip=$(terraform output -raw database_private_ip)" >> $GITHUB_OUTPUT
+          echo "observability_public_ip=$(terraform output -raw observability_public_ip)" >> $GITHUB_OUTPUT
 
       - name: Sync variables to organization
         if: ${{ !inputs.destroy && inputs.apply }}

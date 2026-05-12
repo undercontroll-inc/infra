@@ -197,7 +197,7 @@ resource "aws_security_group" "observability" {
   }
 
   tags = {
-    Name = "${var.env}-database-sg"
+    Name = "${var.env}-observability-sg"
     Env  = var.env
   }
 }

@@ -30,6 +30,10 @@ output "database_private_ip" {
   value = module.ec2.database_private_ip
 }
 
+output "observability_public_ip" {
+  value = module.ec2.observability_public_ip
+}
+
 output "name" {
   value = module.ec2.name
 }
