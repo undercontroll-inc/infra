@@ -6,20 +6,41 @@ on:
       albIp:
         type: string
         required: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: false
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+      AWS_SESSION_TOKEN:
+        required: false
   workflow_dispatch:
+    inputs:
+      albIp:
+        description: "ALB public IP for Prometheus target"
+        required: false
+        type: string
   push:
     branches:
       - main
     paths:
-      - "infra/grafana/datasources/datasource.yml"
-      - "infra/prometheus.yml"
+      - "grafana/datasources/datasource.yml"
+      - "prometheus.yml"
 
 jobs:
   apply:
     runs-on: ubuntu-latest
+    env:
+      ALB_IP: ${{ inputs.albIp || vars.BASTION_HOST }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate ALB IP
+        run: |
+          if [ -z "$ALB_IP" ]; then
+            echo "ALB_IP is required (set inputs.albIp or vars.BASTION_HOST)."
+            exit 1
+          fi
+
       - name: Apply Prometheus configuration
-        run: sed -i 's/albIp/${{ inputs.albIp }}/' infra/prometheus.yml
+        run: sed -i "s/albIp/${ALB_IP}/" prometheus.yml
