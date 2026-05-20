@@ -22,9 +22,9 @@ on:
         required: true
       AWS_SESSION_TOKEN:
         required: true
-      RABBITMQ_USER:
+      RABBIT_USERNAME:
         required: true
-      RABBITMQ_PASSWORD:
+      RABBIT_PASSWORD:
         required: true
       REDIS_USERNAME:
         required: true
@@ -98,8 +98,8 @@ jobs:
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
           terraform destroy \
             -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
-            -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
-            -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
+            -var="rabbitmq_user=${{ secrets.RABBIT_USERNAME }}" \
+            -var="rabbitmq_password=${{ secrets.RABBIT_PASSWORD }}" \
             -var="redis_username=${{ secrets.REDIS_USERNAME }}" \
             -var="redis_password=${{ secrets.REDIS_PASSWORD }}" \
             -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
@@ -120,8 +120,8 @@ jobs:
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
           terraform plan \
             -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
-            -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
-            -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
+            -var="rabbitmq_user=${{ secrets.RABBIT_USERNAME }}" \
+            -var="rabbitmq_password=${{ secrets.RABBIT_PASSWORD }}" \
             -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
             -var="db_username=${{ secrets.DB_USERNAME }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
