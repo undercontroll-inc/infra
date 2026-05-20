@@ -12,3 +12,5 @@ backend_port = 8080
 
 # Nome da key pair a ser usada para o ssh nas instancias
 key_pair_name = "minha-chave"
+redis_username = "redis"
+redis_password = "redis"

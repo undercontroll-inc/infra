@@ -42,7 +42,7 @@ module "subnets" {
   services_private_subnet_cidr = var.services_private_subnet_cidr
   backend_private_subnet_cidr  = var.backend_private_subnet_cidr
   database_private_subnet_cidr = var.database_private_subnet_cidr
-  observability_subnet_cidr     = var.observability_public_subnet_cidr
+  observability_subnet_cidr    = var.observability_public_subnet_cidr
 }
 
 module "ngtw" {
@@ -54,16 +54,16 @@ module "ngtw" {
 }
 
 module "route_tables" {
-  source                     = "./modules/route_table"
-  env                        = var.env
-  vpc_id                     = module.vpc.vpc_id
-  igw_id                     = module.igtw.igw_id
-  nat_gateway_id             = module.ngtw.nat_gateway_id
-  alb_public_subnet_id       = module.subnets.alb_public_subnet_id
+  source                         = "./modules/route_table"
+  env                            = var.env
+  vpc_id                         = module.vpc.vpc_id
+  igw_id                         = module.igtw.igw_id
+  nat_gateway_id                 = module.ngtw.nat_gateway_id
+  alb_public_subnet_id           = module.subnets.alb_public_subnet_id
   observability_public_subnet_id = module.subnets.observability_public_subnet_id
-  services_private_subnet_id = module.subnets.services_private_subnet_id
-  backend_private_subnet_id  = module.subnets.backend_private_subnet_id
-  database_private_subnet_id = module.subnets.database_private_subnet_id
+  services_private_subnet_id     = module.subnets.services_private_subnet_id
+  backend_private_subnet_id      = module.subnets.backend_private_subnet_id
+  database_private_subnet_id     = module.subnets.database_private_subnet_id
 }
 
 module "security_groups" {
@@ -88,6 +88,8 @@ module "ec2" {
   rabbitmq_password               = var.rabbitmq_password
   db_username                     = var.db_username
   db_password                     = var.db_password
+  redis_username                  = var.redis_username
+  redis_password                  = var.redis_password
   key_pair_name                   = var.key_pair_name
   deploy_public_key               = var.deploy_public_key
   observability_security_group_id = module.security_groups.observability_sg_id

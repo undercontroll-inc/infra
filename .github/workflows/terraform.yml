@@ -26,6 +26,10 @@ on:
         required: true
       RABBITMQ_PASSWORD:
         required: true
+      REDIS_USERNAME:
+        required: true
+      REDIS_PASSWORD:
+        required: true
       DEPLOY_PUBLIC_KEY:
         required: true
       DB_USERNAME:
@@ -96,6 +100,8 @@ jobs:
             -var-file="./environments/${{ inputs.environment }}/terraform.tfvars" \
             -var="rabbitmq_user=${{ secrets.RABBITMQ_USER }}" \
             -var="rabbitmq_password=${{ secrets.RABBITMQ_PASSWORD }}" \
+            -var="redis_username=${{ secrets.REDIS_USERNAME }}" \
+            -var="redis_password=${{ secrets.REDIS_PASSWORD }}" \
             -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
             -var="db_username=${{ secrets.DB_USERNAME }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
@@ -119,6 +125,8 @@ jobs:
             -var="deploy_public_key=${{ secrets.DEPLOY_PUBLIC_KEY }}" \
             -var="db_username=${{ secrets.DB_USERNAME }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="redis_username=${{ secrets.REDIS_USERNAME }}" \
+            -var="redis_password=${{ secrets.REDIS_PASSWORD }}" \
             -var="jwt_secret=${{ secrets.JWT_SECRET }}" \
             -var="mail_host=${{ secrets.MAIL_HOST }}" \
             -var="mail_port=${{ secrets.MAIL_PORT }}" \
@@ -186,6 +194,12 @@ jobs:
             --body "${NOTIFICATION_IP}"
 
           gh variable set RABBITMQ_HOST \
+            --org undercontroll-inc \
+            --visibility all \
+            --body "${RABBITMQ_IP}"
+
+          # Redis roda na mesma services_instance que o RabbitMQ
+          gh variable set REDIS_HOST \
             --org undercontroll-inc \
             --visibility all \
             --body "${RABBITMQ_IP}"

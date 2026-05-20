@@ -64,6 +64,16 @@ variable "rabbitmq_password" {
   sensitive = true
 }
 
+variable "redis_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "redis_password" {
+  type      = string
+  sensitive = true
+}
+
 variable "db_password" {
   type      = string
   sensitive = true

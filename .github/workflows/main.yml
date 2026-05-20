@@ -65,6 +65,8 @@ jobs:
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
       GH_PAT: ${{ secrets.GH_PAT }}
+      REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
+      REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
   observability:
     needs: terraform
     uses: ./.github/workflows/observability.yml

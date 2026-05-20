@@ -32,6 +32,8 @@ resource "aws_instance" "services_instance" {
   user_data = templatefile("${path.module}/rabbitmq-userdata.sh.tpl", {
     rabbitmq_password = var.rabbitmq_password
     rabbitmq_user     = var.rabbitmq_user
+    redis_username =    var.redis_username
+    redis_password =    var.redis_password
   })
 
   tags = {
