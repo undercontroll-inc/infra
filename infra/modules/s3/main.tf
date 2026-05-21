@@ -28,3 +28,20 @@ resource "aws_s3_bucket_intelligent_tiering_configuration" "export_tiering_confi
     days        = 125
   }
 }
+
+resource "aws_s3_bucket" "announcement_image_upload" {
+  bucket = "undercontroll-${var.env}-announcement-image-upload"
+
+  tags = {
+    Env = var.env
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "announcement_image_upload_access_block" {
+  bucket = aws_s3_bucket.announcement_image_upload.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}

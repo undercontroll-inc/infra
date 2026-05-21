@@ -37,3 +37,7 @@ output "observability_public_ip" {
 output "export_bucket_name" {
   value = module.s3.export_bucket_name
 }
+
+output "announcement_image_upload_name" {
+  value = module.s3.announcement_image_upload_name
+}

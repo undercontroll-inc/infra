@@ -155,6 +155,8 @@ jobs:
           echo "notification_ip=$(terraform output -raw notification_private_ip)" >> $GITHUB_OUTPUT
           echo "database_private_ip=$(terraform output -raw database_private_ip)" >> $GITHUB_OUTPUT
           echo "observability_public_ip=$(terraform output -raw observability_public_ip)" >> $GITHUB_OUTPUT
+          echo "export_bucket_name=$(terraform output -raw export_bucket_name)" >> $GITHUB_OUTPUT
+          echo "announcement_image_upload_bucket_name=$(terraform output -raw announcement_image_upload_name)" >> $GITHUB_OUTPUT
 
       - name: Sync variables to organization
         if: ${{ !inputs.destroy && inputs.apply }}
@@ -167,6 +169,8 @@ jobs:
           RABBITMQ_IP: ${{ steps.outputs.outputs.rabbitmq_ip }}
           DATABASE_PRIVATE_IP: ${{ steps.outputs.outputs.database_private_ip }}
           OBSERVABILITY_PUBLIC_IP: ${{ steps.outputs.outputs.observability_public_ip }}
+          S3_EXPORT_BUCKET: ${{ steps.outputs.outputs.export_bucket_name }}
+          S3_UPLOAD_BUCKET: ${{ steps.outputs.outputs.announcement_image_upload_bucket_name }}
         run: |
           gh variable set BASTION_HOST \
             --org undercontroll-inc \
@@ -208,3 +212,14 @@ jobs:
             --org undercontroll-inc \
             --visibility all \
             --body "${DATABASE_PRIVATE_IP}"
+
+          gh variable set S3_EXPORT_BUCKET \
+            --org undercontroll-inc \
+            --visibility all \
+            --body "${S3_EXPORT_BUCKET}"
+
+          gh variable set S3_UPLOAD_BUCKET \
+            --org undercontroll-inc \
+            --visibility all \
+            --body "${S3_UPLOAD_BUCKET}"
+          
