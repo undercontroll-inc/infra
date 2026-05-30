@@ -123,3 +123,9 @@ variable "redis_password" {
   type      = string
   sensitive = true
 }
+
+variable "frontend_allowed_origins" {
+  description = "Origins allowed to upload and read announcement images through presigned S3 URLs"
+  type        = list(string)
+  default     = ["*"]
+}

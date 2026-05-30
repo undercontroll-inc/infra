@@ -98,6 +98,7 @@ module "ec2" {
 }
 
 module "s3" {
-  source = "./modules/s3"
-  env    = var.env
+  source                   = "./modules/s3"
+  env                      = var.env
+  frontend_allowed_origins = var.frontend_allowed_origins
 }

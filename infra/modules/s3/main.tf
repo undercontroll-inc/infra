@@ -45,3 +45,15 @@ resource "aws_s3_bucket_public_access_block" "announcement_image_upload_access_b
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
+
+resource "aws_s3_bucket_cors_configuration" "announcement_image_upload_cors" {
+  bucket = aws_s3_bucket.announcement_image_upload.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "HEAD", "PUT"]
+    allowed_origins = var.frontend_allowed_origins
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3600
+  }
+}
